@@ -67,10 +67,10 @@
                             <span style="color: @textColor;">@day</span>
                         }
                     </td>
-    if ((day + ViewBag.FirstDayOfWeek - 1) % 7 == 6)
-    {
-        @:</tr><tr>
-    }
+                    if ((day + ViewBag.FirstDayOfWeek - 1) % 7 == 6)
+                    {
+                        @:</tr><tr>
+                    }
                 }
             </tr>
         </tbody>

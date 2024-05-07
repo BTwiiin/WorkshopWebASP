@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Home\CreateTicket.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="entrypoint.sh" />
   </ItemGroup>
 

@@ -1,0 +1,12 @@
+﻿@model WorkshopWeb.ViewModels.SlotSelectionViewModel
+
+<form asp-action="SelectTimeSlots" method="post">
+    @foreach (var slot in Model.TimeSlots)
+    {
+        <div>
+            <input type="checkbox" name="selectedSlots" value="@slot.TimeSlotId" />
+            @Html.DisplayFor(_ => slot.StartTime)
+        </div>
+    }
+    <button type="submit">Assign Slots</button>
+</form>

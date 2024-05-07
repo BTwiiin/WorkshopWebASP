@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WorkshopWeb.Data;
 using WorkshopWeb.Models;
+using WorkshopWeb.ViewModels;
 
 public class CalendarController : Controller
 {
@@ -157,5 +159,53 @@ public class CalendarController : Controller
             // Handle the case where the slot is already booked or an error occurs
             return RedirectToAction("Index", new { date = date, error = "Slot already booked or unavailable" });
         }
+    }
+
+    public IActionResult SelectTimeSlots()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var model = new SlotSelectionViewModel
+        {
+            TimeSlots = _context.TimeSlots.Where(t => !t.IsBooked && t.EmployeeId == userId).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult SelectTimeSlots(int[] selectedSlots)
+    {
+        /*var ticket = _context.TimeSlots.FirstOrDefault(t => t.TicketId == ticketId);
+        if (ticket == null)
+        {
+            return NotFound();
+        }*/
+        int ticketId = 0;
+
+        if (TempData["TicketId"] is int)
+        {
+            ticketId = (int)TempData["TicketId"];
+        }
+
+        if (!_context.Tickets.Any(t => t.TicketId == ticketId))
+        {
+            throw new InvalidOperationException("Ticket ID does not exist.");
+        }
+
+        
+
+        foreach (var slotId in selectedSlots)
+        {
+            var slot = _context.TimeSlots.FirstOrDefault(t => t.TimeSlotId == slotId);
+            if (slot != null && !slot.IsBooked)
+            {
+                slot.IsBooked = true;
+                slot.TicketId = ticketId; // Link the slot to the ticket
+                _context.Update(slot);
+            }
+        }
+        _context.SaveChanges();
+
+        return RedirectToAction("Details", "Tickets", new { id = ticketId });
     }
 }

@@ -31,6 +31,10 @@ namespace WorkshopWeb.Data
 
         public DbSet<TimeSlot> TimeSlots { get; set; }
 
+        public DbSet<Ticket> Tickets { get; set; }
+
+        public DbSet<UserTicket> UserTickets { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -40,6 +44,27 @@ namespace WorkshopWeb.Data
                 .WithMany() // Assuming the CustomUser class has no navigation property back to TimeSlots, or it's not included here
                 .HasForeignKey(t => t.EmployeeId)
                 .IsRequired(); // Make sure this is marked as required if it should be non-nullable
+
+            modelBuilder.Entity<UserTicket>()
+                .HasKey(ut => new { ut.CustomUserId, ut.TicketId }); // Composite key
+
+            modelBuilder.Entity<UserTicket>()
+                .HasOne(ut => ut.CustomUser)
+                .WithMany(c => c.UserTickets)
+                .HasForeignKey(ut => ut.CustomUserId);
+
+            modelBuilder.Entity<UserTicket>()
+                .HasOne(ut => ut.Ticket)
+                .WithMany(t => t.UserTickets)
+                .HasForeignKey(ut => ut.TicketId);
+
+            modelBuilder.Entity<UserTicket>()
+                .HasKey(u => u.UserTicketId);
+
+            modelBuilder.Entity<UserTicket>()
+                .Property(u => u.UserTicketId)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
         }
     }
 }

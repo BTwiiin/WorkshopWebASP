@@ -1,0 +1,33 @@
+﻿@model WorkshopWeb.Models.Ticket
+@{
+    var userList = ViewBag.Users as SelectList;
+}
+
+<form asp-action="CreateTicket" method="post">
+    <div>
+        <label for="Model">Model:</label>
+        <input type="text" id="Model" name="Model" value="@Model.Model" required />
+    </div>
+    <div>
+        <label for="Brand">Brand:</label>
+        <input type="text" id="Brand" name="Brand" value="@Model.Brand" required />
+    </div>
+    <div>
+        <label for="RegId">Registration ID:</label>
+        <input type="text" id="RegId" name="RegId" value="@Model.RegId" required />
+    </div>
+    <div>
+        <label for="Description">Description:</label>
+        <textarea id="Description" name="Description">@Model.Description</textarea>
+    </div>
+@*     <div>
+        <label for="CustomUserId">Assign Users:</label>
+        <select id="UserId" name="userIds" multiple>
+            @foreach (var user in userList)
+            {
+                <option value="@user.Value">@user.Text</option>
+            }
+        </select>
+    </div> *@
+    <button type="submit">Submit</button>
+</form>
