@@ -1,0 +1,35 @@
+﻿@model IEnumerable<TimeSlot>
+
+<h2>Time Slots for @ViewBag.CurrentDate.ToString("yyyy-MM-dd")</h2>
+
+<a href="@Url.Action("Index", new { date = ViewBag.PreviousDate })" class="btn btn-secondary">Previous Day</a>
+<a href="@Url.Action("Index", new { date = ViewBag.NextDate })" class="btn btn-secondary">Next Day</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slot in Model)
+        {
+            <tr>
+                <td>@slot.StartTime.ToString("HH:mm") - @slot.StartTime.AddHours(1).ToString("HH:mm")</td>
+                <td>@(slot.IsBooked ? "Booked" : "Available")</td>
+                <td>
+                    @if (!slot.IsBooked)
+                    {
+                        <form asp-action="Book" method="post">
+                            <input type="hidden" name="slotId" value="@slot.TimeSlotId" />
+                            <input type="hidden" name="date" value="@ViewBag.CurrentDate" />
+                            <button type="submit" class="btn btn-primary">Book Slot</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

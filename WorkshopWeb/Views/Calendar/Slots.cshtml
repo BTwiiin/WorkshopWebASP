@@ -1,0 +1,78 @@
+﻿@model IEnumerable<TimeSlot>
+
+@{
+    ViewData["Title"] = "Calendar";
+    var daysInMonth = ViewBag.DaysInMonth;
+    var firstDayOfWeek = ViewBag.FirstDayOfWeek;
+    var currentMonth = ViewBag.CurrentMonth;
+    var daysWithSlots = ViewBag.DaysWithSlots as HashSet<int>;
+    var today = ViewBag.Today;
+
+}
+
+<body>
+    <h2 align="center" style="color: orange;">
+        @currentMonth
+    </h2>
+    <br />
+
+    <div align="center">
+        <a href="@Url.Action("Slots", "Calendar", new { year = ViewBag.PreviousMonthYear, month = ViewBag.PreviousMonth })" class="btn btn-secondary">Previous Month</a>
+        <a href="@Url.Action("Slots", "Calendar", new { year = ViewBag.NextMonthYear, month = ViewBag.NextMonth })" class="btn btn-secondary">Next Month</a>
+    </div>
+     
+    <table bgcolor="lightgrey" align="center"
+        cellspacing="21" cellpadding="21">      
+        <caption align="top">
+        </caption>
+        <thead>
+            <tr>
+                <th>Sun</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+            </tr>
+        </thead>
+         
+        <tbody>
+            <tr>
+                @for (int i = 0; i < ViewBag.FirstDayOfWeek; i++)
+                {
+                    <td></td>
+                }
+                @for (int day = 1; day <= ViewBag.DaysInMonth; day++)
+                {
+                    DateTime currentDate = new DateTime(ViewBag.Year, ViewBag.Month, day);
+                    bool isFullyBooked = ViewBag.DaysFullyBooked.Contains(day);
+                    bool hasAvailableSlots = ViewBag.DaysWithAvailableSlots.Contains(day);
+
+                    string bgColor = currentDate == DateTime.Today ? "yellow" : 
+                                     isFullyBooked ? "black" : 
+                                     hasAvailableSlots ? "transparent" : "lightgrey"; // No slots created for this day
+
+                    string textColor = bgColor == "black" ? "white" : "black";
+
+                    <td bgcolor="@bgColor">
+                        @if (hasAvailableSlots)
+                        {
+                            <a href="@Url.Action("Index", "Calendar", new { date = currentDate })" style="color: @textColor;">
+                                @day
+                            </a>
+                        }
+                        else
+                        {
+                            <span style="color: @textColor;">@day</span>
+                        }
+                    </td>
+    if ((day + ViewBag.FirstDayOfWeek - 1) % 7 == 6)
+    {
+        @:</tr><tr>
+    }
+                }
+            </tr>
+        </tbody>
+    </table>
+</body>
