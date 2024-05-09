@@ -35,6 +35,10 @@ namespace WorkshopWeb.Data
 
         public DbSet<UserTicket> UserTickets { get; set; }
 
+        public DbSet<Estimate> Estimates { get; set; }
+
+        public DbSet<Part> Parts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

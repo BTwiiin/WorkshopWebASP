@@ -38,6 +38,17 @@
                             <br>
                         }
                     </td>
+                    <td>
+                        <a href="@Url.Action("TicketDetails", "Home", new { ticketId = ticket.TicketId })" class="btn btn-primary">Details</a>
+
+                    </td>
+                    <td>
+                        <form asp-action="DeleteTicket" method="post">
+                            <input type="hidden" name="ticketId" value="@ticket.TicketId" />
+                            <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
+                            <button type="submit" class="btn btn-danger">Delete Ticket</button>
+                        </form>
+                    </td>
                 </tr>
             }
 

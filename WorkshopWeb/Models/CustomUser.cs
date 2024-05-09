@@ -17,6 +17,8 @@ namespace WorkshopWeb.Models
 
         public Role Role { get; set; }
 
+        public int Wage { get; set; }
+
         public ICollection<TimeSlot>? TimeSlots { get; set; }
 
         public ICollection<UserTicket>? UserTickets { get; set; }

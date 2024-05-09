@@ -11,6 +11,9 @@ namespace WorkshopWeb.Models.AccountModels
         public string? Surname { get; set; }
 
         [Required]
+        public int Wage { get; set; }
+
+        [Required]
         [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
 

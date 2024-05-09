@@ -144,7 +144,7 @@ public class CalendarController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Book(int slotId, DateTime date)
+    public async Task<IActionResult> DisableSlot(int slotId, DateTime date)
     {
         var slot = await _context.TimeSlots.FirstOrDefaultAsync(t => t.TimeSlotId == slotId);
         if (slot != null && !slot.IsBooked)
@@ -157,7 +157,25 @@ public class CalendarController : Controller
         else
         {
             // Handle the case where the slot is already booked or an error occurs
-            return RedirectToAction("Index", new { date = date, error = "Slot already booked or unavailable" });
+            return RedirectToAction("Index", new { date = date, error = "Slot already disabled or unavailable" });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EnableSlot(int slotId, DateTime date)
+    {
+        var slot = await _context.TimeSlots.FirstOrDefaultAsync(t => t.TimeSlotId == slotId);
+        if (slot != null && slot.IsBooked)
+        {
+            slot.IsBooked = false;
+            _context.Update(slot);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", new { date = date });
+        }
+        else
+        {
+            // Handle the case where the slot is already booked or an error occurs
+            return RedirectToAction("Index", new { date = date, error = "Slot already enabled or unavailable" });
         }
     }
 
@@ -175,16 +193,20 @@ public class CalendarController : Controller
     [HttpPost]
     public IActionResult SelectTimeSlots(int[] selectedSlots)
     {
-        /*var ticket = _context.TimeSlots.FirstOrDefault(t => t.TicketId == ticketId);
-        if (ticket == null)
-        {
-            return NotFound();
-        }*/
         int ticketId = 0;
 
         if (TempData["TicketId"] is int)
         {
             ticketId = (int)TempData["TicketId"];
+        }
+
+        if (TempData["AmountOfSlotsNeeded"] is int)
+        {
+            var amountOfSlotsNeeded = (int)TempData["AmountOfSlotsNeeded"];
+            if (selectedSlots.Length != amountOfSlotsNeeded)
+            {
+                return RedirectToAction("SelectTimeSlots", new { error = "Please select the correct number of slots" });
+            }
         }
 
         if (!_context.Tickets.Any(t => t.TicketId == ticketId))
@@ -206,6 +228,6 @@ public class CalendarController : Controller
         }
         _context.SaveChanges();
 
-        return RedirectToAction("Details", "Tickets", new { id = ticketId });
+        return RedirectToAction("Index", "Home");
     }
 }

@@ -1,0 +1,54 @@
+﻿@model WorkshopWeb.Models.Ticket
+
+@{
+    ViewData["Title"] = "Edit Ticket";
+}
+
+<h2>Edit Ticket</h2>
+
+<form asp-action="EditTicket" method="post">
+    <input type="hidden" asp-for="TicketId" />
+
+    <div class="form-group">
+        <label asp-for="Model" class="control-label"></label>
+        <input asp-for="Model" class="form-control" />
+        <span asp-validation-for="Model" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Brand" class="control-label"></label>
+        <input asp-for="Brand" class="form-control" />
+        <span asp-validation-for="Brand" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RegId" class="control-label"></label>
+        <input asp-for="RegId" class="form-control" />
+        <span asp-validation-for="RegId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AmountOfSlotsNeeded" class="control-label"></label>
+        <input asp-for="AmountOfSlotsNeeded" class="form-control" type="number" />
+        <span asp-validation-for="AmountOfSlotsNeeded" class="text-danger"></span>
+    </div>
+
+    <input type="hidden" name="OriginalAmountOfSlotsNeeded" value="@Model.AmountOfSlotsNeeded" />
+
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="TicketDetails" asp-route-ticketId="@Model.TicketId" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -22,10 +22,18 @@
                 <td>
                     @if (!slot.IsBooked)
                     {
-                        <form asp-action="Book" method="post">
+                        <form asp-action="DisableSlot" method="post">
                             <input type="hidden" name="slotId" value="@slot.TimeSlotId" />
                             <input type="hidden" name="date" value="@ViewBag.CurrentDate" />
-                            <button type="submit" class="btn btn-primary">Book Slot</button>
+                            <button type="submit" class="btn btn-primary">Disable Slot</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="EnableSlot" method="post">
+                            <input type="hidden" name="slotId" value="@slot.TimeSlotId" />
+                            <input type="hidden" name="date" value="@ViewBag.CurrentDate" />
+                            <button type="submit" class="btn btn-danger">Enable Slot</button>
                         </form>
                     }
                 </td>

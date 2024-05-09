@@ -1,7 +1,53 @@
 ﻿@model WorkshopWeb.Models.Ticket
 
-<div>
-    <h2>@Model.Brand @Model.Model</h2>
-    <p>@Model.Description</p>
-    <!-- Display other details as needed -->
+@{
+    ViewData["Title"] = "Ticket Details";
+}
+
+<h2>Ticket Details</h2>
+
+<div class="card">
+    <div class="card-header">
+        Ticket Information
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Model</dt>
+            <dd class="col-sm-9">@Model.Model</dd>
+
+            <dt class="col-sm-3">Brand</dt>
+            <dd class="col-sm-9">@Model.Brand</dd>
+
+            <dt class="col-sm-3">Registration ID</dt>
+            <dd class="col-sm-9">@Model.RegId</dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3">Amount of Slots Needed</dt>
+            <dd class="col-sm-9">@Model.AmountOfSlotsNeeded</dd>
+        </dl>
+    </div>
+</div>
+
+@if (Model.UserTickets != null && Model.UserTickets.Any())
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            Assigned Users
+        </div>
+        <div class="card-body">
+            <ul>
+                @foreach (var userTicket in Model.UserTickets)
+                {
+                    <li>@userTicket.CustomUser.Name @userTicket.CustomUser.Surname</li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+    <a asp-action="EditTicket" asp-route-ticketId="@Model.TicketId" class="btn btn-secondary">Edit Ticket</a>
 </div>

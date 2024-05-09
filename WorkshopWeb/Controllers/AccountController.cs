@@ -52,6 +52,7 @@ namespace WorkshopWeb.Controllers
                 {
                     Name = model.Name,
                     Surname = model.Surname,
+                    Wage = model.Wage,
                     UserName = model.Email,
                     Email = model.Email,
                 };
