@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorkshopWeb.Data;
@@ -42,6 +43,7 @@ namespace WorkshopWeb.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model, string? returnUrl = null)
         {
@@ -63,7 +65,7 @@ namespace WorkshopWeb.Controllers
                 {
                     GenerateMonthOfTimeSlots(user.Id, DateTime.UtcNow);
 
-                    await signInManager.SignInAsync(user, false);
+                    //await signInManager.SignInAsync(user, false);
 
                     return RedirectToAction("Index", "Home");
                 }

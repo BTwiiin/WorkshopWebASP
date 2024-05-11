@@ -41,14 +41,57 @@
 
     <input type="hidden" name="OriginalAmountOfSlotsNeeded" value="@Model.AmountOfSlotsNeeded" />
 
+    <h3>Estimate</h3>
+    <div class="form-group">
+        <label asp-for="Estimate.Description" class="control-label"></label>
+        <textarea asp-for="Estimate.Description" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Estimate.ExpectedCostOfService" class="control-label"></label>
+        <input asp-for="Estimate.ExpectedCostOfService" class="form-control" type="number" step="0.01" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Estimate.IsAcceptedByClient" class="control-label"></label>
+        <input asp-for="Estimate.IsAcceptedByClient" class="form-check-input" type="checkbox" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+
+    <h3>Parts</h3>
+    <div id="parts-list">
+       
+    </div>
+    <button type="button" onclick="addPart()" class="btn btn-info">Add Part</button>
+
+
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />
         <a asp-action="TicketDetails" asp-route-ticketId="@Model.TicketId" class="btn btn-secondary">Cancel</a>
     </div>
+
+
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        function addPart() {
+            const index = document.querySelectorAll('.part-item').length;
+            const partHtml = `
+                <div class="form-group part-item">
+                    <input type="hidden" name="parts[${index}].PartId" value="0" />
+                    <label>Name:</label>
+                    <input type="text" name="parts[${index}].Name" class="form-control" />
+                    <label>Description:</label>
+                    <input type="text" name="parts[${index}].Description" class="form-control" />
+                    <label>Amount:</label>
+                    <input type="number" name="parts[${index}].Amount" class="form-control" />
+                    <label>Unit Price:</label>
+                    <input type="number" name="parts[${index}].UnitPrice" class="form-control" />
+                </div>
+            `;
+            document.getElementById('parts-list').insertAdjacentHTML('beforeend', partHtml);
+        }
+    </script>
 }

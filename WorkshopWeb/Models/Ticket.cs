@@ -21,13 +21,12 @@ namespace WorkshopWeb.Models
 
         public int AmountOfSlotsNeeded { get; set; }
 
-        public ICollection<TimeSlot>? TimeSlots { get; set; }
+        public List<TimeSlot>? TimeSlots { get; set; }
 
         public ICollection<UserTicket>? UserTickets { get; set; }
 
-        public Estimate? RepairEstimate { get; set; }
+        public List<Part>? Parts { get; set; } 
 
-        public ICollection<Part>? Parts { get; set; } = new List<Part>();
-
+        public Estimate? Estimate { get; set; }
     }
 }

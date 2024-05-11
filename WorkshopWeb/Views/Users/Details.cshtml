@@ -1,0 +1,39 @@
+﻿@model WorkshopWeb.Models.CustomUser
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h2>User Details</h2>
+
+<div>
+    <h4>Name: @Model.Name</h4>
+    <h4>Surname: @Model.Surname</h4>
+    <h4>Email: @Model.Email</h4>
+    <h4>Role: @Model.Role</h4>
+    <h4>Wage: @Model.Wage</h4>
+    <h4>Tickets:</h4>
+    <ul>
+        @foreach (var ticket in Model.UserTickets.Select(ut => ut.Ticket))
+        {
+            <li>
+                Ticket ID: @ticket.TicketId, Model: @ticket.Model, Brand: @ticket.Brand, RegId: @ticket.RegId, Description: @ticket.Description
+                <ul>
+                    <li>Amount of Slots Needed: @ticket.AmountOfSlotsNeeded</li>
+                    <li>Parts: @(ticket.Parts != null ? string.Join(", ", ticket.Parts.Select(p => p.Name)) : "No parts listed")</li>
+                    <li>Estimate: @(ticket.Estimate != null ? $"${ticket.Estimate.ExpectedCostOfService}" : "No estimate available")</li>
+                    <li>
+                        Time Slots:
+                        <ul>
+                            @foreach (var slot in ticket.TimeSlots)
+                            {
+                                <li>@slot.StartTime - Booked: @(slot.IsBooked ? "Yes" : "No")</li>
+                            }
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        }
+    </ul>
+</div>
+
+<a asp-action="Index">Back to List</a>

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -44,6 +45,7 @@ public class HomeController : Controller
         return View(new Ticket());
     }
 
+
     [HttpPost]
     public IActionResult CreateTicket(Ticket ticket, string[] userIds)
     {
@@ -52,7 +54,7 @@ public class HomeController : Controller
             _context.Tickets.Add(ticket);
             _context.SaveChanges();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId != null)
             {
                 var userTicket = new UserTicket
@@ -93,6 +95,13 @@ public class HomeController : Controller
                 slot.IsBooked = false;
                 _context.Update(slot);
             }
+            var parts = _context.Parts.Where(p => p.TicketId == ticketId);
+            _context.Parts.RemoveRange(parts);
+            var estimate = _context.Estimates.FirstOrDefault(e => e.TicketId == ticketId);
+            if (estimate != null)
+            {
+                _context.Estimates.Remove(estimate);
+            }
             _context.RemoveRange(_context.UserTickets.Where(ut => ut.TicketId == ticketId));
             _context.SaveChanges();
         }
@@ -104,47 +113,100 @@ public class HomeController : Controller
         var ticket = _context.Tickets
             .Include(t => t.UserTickets)
             .ThenInclude(ut => ut.CustomUser)
+            .Include(t => t.TimeSlots)
+            .Include(t => t.Parts)
+            .Include(t => t.Estimate) 
             .FirstOrDefault(t => t.TicketId == ticketId);
-        return View(ticket);
-    }
 
-    public IActionResult EditTicket(int ticketId)
-    {
-        var ticket = _context.Tickets.Find(ticketId);
         if (ticket == null)
         {
             return NotFound();
         }
+
+        return View(ticket);
+    }
+
+
+    public IActionResult EditTicket(int ticketId)
+    {
+        var ticket = _context.Tickets
+            .Include(t => t.Parts)
+            .Include(t => t.Estimate)
+            .FirstOrDefault(t => t.TicketId == ticketId);
+
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
         return View(ticket);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult EditTicket(Ticket ticket, int OriginalAmountOfSlotsNeeded)
+    public async Task<IActionResult> EditTicket(Ticket ticket, int OriginalAmountOfSlotsNeeded, List<Part> parts, Estimate estimate)
     {
         if (ModelState.IsValid)
         {
-            var originalTicket = _context.Tickets.AsNoTracking().FirstOrDefault(t => t.TicketId == ticket.TicketId);
-            if (originalTicket == null)
+            var existingTicket = _context.Tickets.Include(t => t.Parts).FirstOrDefault(t => t.TicketId == ticket.TicketId);
+
+            if (existingTicket == null)
             {
-                return NotFound();
+                return NotFound(); // Or handle the situation where the ticket isn't found
             }
 
             if (OriginalAmountOfSlotsNeeded != ticket.AmountOfSlotsNeeded)
             {
                 TempData["TicketId"] = ticket.TicketId;
                 TempData["AmountOfSlotsNeeded"] = ticket.AmountOfSlotsNeeded - OriginalAmountOfSlotsNeeded;
-                _context.Update(ticket);
-                _context.SaveChanges();
+                _context.Entry(existingTicket).CurrentValues.SetValues(ticket);
+                await _context.SaveChangesAsync();
                 return RedirectToAction("SelectTimeSlots", "Calendar");
             }
-            _context.Update(ticket);
-            _context.SaveChanges();
+
+            _context.Entry(existingTicket).CurrentValues.SetValues(ticket);
+
+            foreach (var part in parts)
+            {
+                var existingPart = existingTicket.Parts.FirstOrDefault(p => p.PartId == part.PartId);
+                if (existingPart != null)
+                {
+                    _context.Entry(existingPart).CurrentValues.SetValues(part);
+                }
+                else
+                {
+                    part.TicketId = existingTicket.TicketId;
+                    _context.Parts.Add(part);
+                }
+            }
+
+            var existingEstimate = _context.Estimates.FirstOrDefault(e => e.TicketId == ticket.TicketId);
+            if (existingEstimate != null)
+            {
+                _context.Estimates.Remove(existingEstimate);
+            }
+            estimate.TicketId = existingTicket.TicketId;
+            _context.Estimates.Add(estimate);
+
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(TicketDetails), new { ticketId = ticket.TicketId });
         }
         return View(ticket);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> DeletePart(int partId)
+    {
+        var part = await _context.Parts.FindAsync(partId);
+        if (part != null)
+        {
+            int ticketId = part.TicketId;
+            _context.Parts.Remove(part);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("TicketDetails", "Home", new { ticketId = part.TicketId });
+        }
+        return NotFound();
+    }
 
 
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WorkshopWeb.Models
 {
@@ -15,6 +16,7 @@ namespace WorkshopWeb.Models
 
         public CustomUser? Employee { get; set; }
 
+        [ForeignKey("Ticket")]
         public int? TicketId { get; set; }
     }
 }

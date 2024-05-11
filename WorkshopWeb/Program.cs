@@ -43,6 +43,22 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<CustomUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        DbInitializer.SeedAdminUser(userManager, roleManager).Wait();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred seeding the DB.");
+    }
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

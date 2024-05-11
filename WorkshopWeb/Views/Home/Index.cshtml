@@ -6,8 +6,15 @@
 
 <div class="text-center">
 
-    <a href="@Url.Action("Slots", "Calendar")" class="btn btn-primary">View Calendar</a>
-    <a href="@Url.Action("CreateTicket", "Home")" class="btn btn-primary">Create Ticket</a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a href="@Url.Action("Index", "Users")" class="btn btn-primary">Manage Users</a>
+    }
+    else
+    {
+        <a href="@Url.Action("Slots", "Calendar")" class="btn btn-primary">View Calendar</a>
+        <a href="@Url.Action("CreateTicket", "Home")" class="btn btn-primary">Create Ticket</a>
+    }
     
 </div>
 <h2>Tickets</h2>
